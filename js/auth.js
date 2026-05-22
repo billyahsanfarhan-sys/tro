@@ -1,6 +1,8 @@
 // ============================================================
 // auth.js — Autentikasi (Username/Password + Google OAuth)
 // Fix: mendukung GitHub Pages subfolder (contoh: /tro/)
+// Fix: ganti sessionStorage → localStorage agar session tidak
+//      hilang saat buka tab baru atau refresh langsung ke halaman
 // ============================================================
 
 // ====== KONFIGURASI AKUN ======
@@ -9,7 +11,7 @@ const ACCOUNTS = [
   { username: 'user1',  password: 'riset123',  name: 'Pengguna Satu',   role: 'user'  },
   { username: 'dosen',  password: 'dosen2024', name: 'Dosen TRO',       role: 'admin' },
   { username: 'ahan',   password: 'ahan123',   name: 'Ahan',            role: 'user'  },
-  { username: 'suci',   password: 'jelek123',   name: 'Suci',            role: 'user'  },
+  { username: 'suci',   password: 'jelek123',  name: 'Suci',            role: 'user'  },
 ];
 
 // ── Deteksi base path otomatis ──
@@ -79,17 +81,21 @@ function triggerGoogleLogin() {
 
 // ============================================================
 // Session Management
+// ✅ PERBAIKAN: pakai localStorage agar session bertahan
+//    saat buka tab baru atau akses langsung via URL
 // ============================================================
-function saveSession(data) { sessionStorage.setItem('tro_session', JSON.stringify(data)); }
+function saveSession(data) {
+  localStorage.setItem('tro_session', JSON.stringify(data));
+}
 
 function getSession() {
-  const raw = sessionStorage.getItem('tro_session');
+  const raw = localStorage.getItem('tro_session');
   if (!raw) return null;
   try { return JSON.parse(raw); } catch { return null; }
 }
 
 function logout() {
-  sessionStorage.removeItem('tro_session');
+  localStorage.removeItem('tro_session');
   if (typeof google !== 'undefined' && google.accounts) {
     try { google.accounts.id.disableAutoSelect(); } catch(e) {}
   }
