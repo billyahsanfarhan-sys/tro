@@ -128,9 +128,7 @@
       background:var(--panel2); border:1px solid rgba(201,168,76,.15);
       border-radius:8px; padding:8px 12px; text-align:center; min-width:56px;
     }
-    .zcell-pivot {
-      background:rgba(201,168,76,.25); border-color:var(--gold);
-    }
+    .zcell-pivot { background:rgba(201,168,76,.25); border-color:var(--gold); }
     .zcell-var { font-size:11px; color:var(--muted); margin-bottom:2px; }
     .zcell-val { font-size:14px; font-weight:600; color:var(--text); }
     .zcell-pivot .zcell-val { color:var(--gold); }
@@ -288,25 +286,36 @@
 
 <script src="js/auth.js"></script>
 <script src="js/Simplex.js"></script>
-<script>
-  const s = getSession();
-  if (s) {
-    document.getElementById('userName').textContent = s.name;
-    document.getElementById('userInitial').textContent = s.name.charAt(0).toUpperCase();
-  }
-  initSimplex();
-  renderHistoryPanel();
-</script>
 <script src="js/exportpdf.js"></script>
 <script>
-  // Tampilkan tombol PDF setelah hasil muncul
-  (function(){
+  // ✅ PERBAIKAN: Tunggu DOM siap sebelum inisialisasi
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // Set info user dari session
+    var s = getSession();
+    if (s) {
+      var nameEl = document.getElementById('userName');
+      var initEl = document.getElementById('userInitial');
+      if (nameEl) nameEl.textContent = s.name;
+      if (initEl) initEl.textContent = s.name.charAt(0).toUpperCase();
+    }
+
+    // Init form simplex — dipanggil setelah DOM benar-benar siap
+    initSimplex();
+
+    // Render riwayat
+    renderHistoryPanel();
+
+    // Tampilkan tombol PDF setelah hasil muncul
     var _orig = window.renderAllSteps;
-    window.renderAllSteps = function(steps){
+    window.renderAllSteps = function (steps) {
       _orig(steps);
-      document.getElementById('pdfBar').style.display = 'flex';
+      var bar = document.getElementById('pdfBar');
+      if (bar) bar.style.display = 'flex';
     };
-  })();
+
+  });
 </script>
+
 </body>
 </html>
